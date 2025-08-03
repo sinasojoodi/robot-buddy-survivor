@@ -889,4 +889,5 @@ function RobotBuddySurvivor() {
 }
 
 export default RobotBuddySurvivor;
+export { GAME_CONFIG, BLOCK_TYPES, LEVEL_REQUIREMENTS, ENEMY_TYPES };
 
