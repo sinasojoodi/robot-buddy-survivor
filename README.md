@@ -69,6 +69,8 @@ This is a 2D survival game built with React and Vite. The game features a player
 *   **Spacebar**: Hold to mine nearby blocks.
 *   **'C' Key**: Toggle the crafting menu.
 *   **'ESC' Key**: Close the crafting menu.
+*   **'Z' Key**: Cycle through blocks to place.
+*   **'X' Key**: Place the selected block above you.
 
 ## 📁 Project Structure
 
