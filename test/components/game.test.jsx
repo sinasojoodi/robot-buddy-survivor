@@ -40,6 +40,8 @@ describe('RobotBuddySurvivor Game Component', () => {
       expect(screen.getByText(/Arrow Keys:/i)).toBeInTheDocument();
       expect(screen.getByText(/Spacebar:/i)).toBeInTheDocument();
       expect(screen.getByText(/'C' Key:/i)).toBeInTheDocument();
+      expect(screen.getByText(/'Z' Key:/i)).toBeInTheDocument();
+      expect(screen.getByText(/'X' Key:/i)).toBeInTheDocument();
     });
 
     test('displays instruction details', () => {
@@ -48,6 +50,8 @@ describe('RobotBuddySurvivor Game Component', () => {
       expect(screen.getByText(/Move your character/i)).toBeInTheDocument();
       expect(screen.getByText(/Mine blocks when standing close/i)).toBeInTheDocument();
       expect(screen.getByText(/Open the crafting menu/i)).toBeInTheDocument();
+      expect(screen.getByText(/Cycle through blocks to place/i)).toBeInTheDocument();
+      expect(screen.getByText(/Place the selected block above you/i)).toBeInTheDocument();
     });
   });
 
