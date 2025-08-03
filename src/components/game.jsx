@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -112,11 +112,41 @@ const ITEM_COLORS = {
 const BLOCK_TYPES = {
   GRASS: { color: '#4a9c2d', breakable: true, hardness: 1, drops: ['dirt'] },
   DIRT: { color: ITEM_COLORS.dirt, breakable: true, hardness: 1, drops: ['dirt'] },
+  COAL: { color: ITEM_COLORS.coal, breakable: true, hardness: 1, drops: ['coal'] },
   STONE: { color: ITEM_COLORS.stone, breakable: true, hardness: 2, drops: ['stone'] },
   IRON_ORE: { color: ITEM_COLORS.iron_ore, breakable: true, hardness: 3, drops: ['iron_ore'] },
   DIAMOND_ORE: { color: ITEM_COLORS.diamond, breakable: true, hardness: 5, drops: ['diamond'] },
   WOOD: { color: ITEM_COLORS.wood, breakable: true, hardness: 1.5, drops: ['wood'] },
   OBSIDIAN: { color: ITEM_COLORS.obsidian, breakable: true, hardness: 8, drops: ['obsidian'] }
+};
+
+// --- PLACEABLE BLOCKS ---
+const PLACEABLE_BLOCKS = Object.keys(BLOCK_TYPES);
+
+// --- NEW: Define which blocks can be placed at each level ---
+const LEVEL_PLACEABLE_BLOCKS = {
+    1: ['WOOD', 'DIRT', 'GRASS'],
+    2: ['WOOD', 'DIRT', 'GRASS', 'STONE'],
+    3: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL'],
+    4: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE'],
+    5: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE'],
+    6: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE', 'OBSIDIAN'],
+    7: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE', 'OBSIDIAN', 'DIAMOND_ORE'],
+    8: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE', 'OBSIDIAN', 'DIAMOND_ORE'],
+    9: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE', 'OBSIDIAN', 'DIAMOND_ORE'],
+    10: ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE', 'OBSIDIAN', 'DIAMOND_ORE'],
+};
+
+// --- Mapping for Block Type to Inventory Item ---
+const BLOCK_TO_INVENTORY_KEY = {
+    GRASS: 'dirt',
+    DIRT: 'dirt',
+    COAL: 'coal',
+    STONE: 'stone',
+    IRON_ORE: 'iron_ore',
+    DIAMOND_ORE: 'diamond',
+    WOOD: 'wood',
+    OBSIDIAN: 'obsidian',
 };
 
 // --- LEVEL REQUIREMENTS ---
@@ -169,7 +199,7 @@ const RECIPES = {
   DAMAGE_BOOST: { obsidian: 1, diamond: 1 },
 };
 
-// --- RECIPE DESCRIPTIONS (UPDATED) ---
+// --- RECIPE DESCRIPTIONS ---
 const RECIPE_DESCRIPTIONS = {
     WOODEN_SWORD: "A basic sword for starting out.",
     STONE_SWORD: "A sturdier sword with better damage.",
@@ -204,6 +234,7 @@ function RobotBuddySurvivor() {
       attacking: false, attackCooldown: 0, swordVisible: false,
       currentTool: 'WOODEN_SWORD', toolDurability: 30,
       armor: 0, speed: GAME_CONFIG.playerSpeed, damageMultiplier: 1,
+      currentBlockType: 'WOOD', 
     },
     robot: {
       x: 130, y: 320, health: 75, maxHealth: 75, energy: 100, maxEnergy: 100,
@@ -645,9 +676,9 @@ function RobotBuddySurvivor() {
         ctx.stroke();
         const healthPercent = enemy.health / enemy.maxHealth;
                  ctx.fillStyle = COLORS.HEALTH_BAR_BG;
-         ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size, UI.HEALTH_BAR_HEIGHT);
+         ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size, 4);
          ctx.fillStyle = COLORS.HEALTH_BAR_FG;
-         ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size * healthPercent, UI.HEALTH_BAR_HEIGHT);
+         ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size * healthPercent, 4);
     });
 
     gameState.drops.forEach(drop => {
@@ -670,7 +701,6 @@ function RobotBuddySurvivor() {
      ctx.fillStyle = COLORS.HUNGER_BAR_BG; ctx.fillRect(10, 530, UI.HEALTH_BAR_WIDTH, UI.HUNGER_BAR_HEIGHT);
      ctx.fillStyle = COLORS.HUNGER_BAR_FG; ctx.fillRect(10, 530, UI.HEALTH_BAR_WIDTH * (gameState.player.hunger / 100), UI.HUNGER_BAR_HEIGHT);
     
-    // ADDED: Player numeric stats
     ctx.fillStyle = COLORS.WHITE;
     ctx.font = 'bold 12px Arial';
     const playerDamage = (TOOLS[gameState.player.currentTool].damage * gameState.player.damageMultiplier).toFixed(0);
@@ -685,7 +715,6 @@ function RobotBuddySurvivor() {
          ctx.fillStyle = COLORS.ENERGY_BAR_BG; ctx.fillRect(200, 530, UI.ROBOT_BAR_WIDTH, UI.HUNGER_BAR_HEIGHT);
          ctx.fillStyle = COLORS.ENERGY_BAR_FG; ctx.fillRect(200, 530, UI.ROBOT_BAR_WIDTH * (gameState.robot.energy / gameState.robot.maxEnergy), UI.HUNGER_BAR_HEIGHT);
         
-        // ADDED: Robot numeric stats
         ctx.fillStyle = COLORS.WHITE;
         ctx.font = 'bold 12px Arial';
         const robotDamage = gameState.robot.upgraded ? 50 : 30;
@@ -700,8 +729,8 @@ function RobotBuddySurvivor() {
         ctx.fillText('Robot Respawning...', 202, 523);
     }
 
-    // Inventory
-         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(UI.INVENTORY_PANEL.x, UI.INVENTORY_PANEL.y, UI.INVENTORY_PANEL.width, UI.INVENTORY_PANEL.height);
+    // Inventory and Placeable Block
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(UI.INVENTORY_PANEL.x, UI.INVENTORY_PANEL.y, UI.INVENTORY_PANEL.width, UI.INVENTORY_PANEL.height);
     ctx.fillStyle = COLORS.WHITE; ctx.font = 'bold 14px Arial'; ctx.fillText('INVENTORY', 385, 518);
     Object.entries(gameState.inventory).forEach(([item, amount], index) => {
       const x = 385 + (index % 4) * 95;
@@ -709,6 +738,18 @@ function RobotBuddySurvivor() {
       ctx.fillStyle = amount > 0 ? COLORS.WHITE : '#888888';
       ctx.fillText(`${item.replace('_', ' ')}: ${amount}`, x, y);
     });
+
+    const currentBlock = gameState.player.currentBlockType;
+    ctx.fillStyle = COLORS.WHITE;
+    ctx.font = 'bold 12px Arial';
+    ctx.fillText('Placing:', 680, 575);
+    ctx.fillStyle = BLOCK_TYPES[currentBlock].color;
+    ctx.fillRect(730, 565, 15, 15);
+    ctx.strokeStyle = COLORS.WHITE;
+    ctx.strokeRect(730, 565, 15, 15);
+    ctx.fillStyle = COLORS.WHITE;
+    ctx.fillText(currentBlock.replace('_', ' '), 750, 575);
+
 
   }, [gameState]);
 
@@ -722,6 +763,88 @@ function RobotBuddySurvivor() {
         if (e.code === 'Escape') {
             e.preventDefault();
             setGameState(prev => ({ ...prev, showCrafting: false }));
+        }
+        if (e.code === 'KeyZ') {
+            e.preventDefault();
+            setGameState(prev => {
+                const allowedForLevel = LEVEL_PLACEABLE_BLOCKS[prev.level] || PLACEABLE_BLOCKS;
+                const validBlocks = allowedForLevel.filter(blockType => {
+                    const inventoryKey = BLOCK_TO_INVENTORY_KEY[blockType];
+                    return prev.inventory[inventoryKey] > 0;
+                });
+
+                if (validBlocks.length === 0) {
+                    return prev;
+                }
+
+                const currentIndex = validBlocks.indexOf(prev.player.currentBlockType);
+                const nextIndex = (currentIndex === -1) ? 0 : (currentIndex + 1) % validBlocks.length;
+                
+                return { ...prev, player: { ...prev.player, currentBlockType: validBlocks[nextIndex] } };
+            });
+        }
+        if (e.code === 'KeyX') {
+            e.preventDefault();
+            setGameState(prev => {
+                const blockToPlace = prev.player.currentBlockType;
+                const inventoryKey = BLOCK_TO_INVENTORY_KEY[blockToPlace];
+                
+                if (prev.inventory[inventoryKey] > 0) {
+                    const placeX = Math.round((prev.player.x + UI.PLAYER_SIZE / 2 - GAME_CONFIG.blockSize / 2) / GAME_CONFIG.blockSize) * GAME_CONFIG.blockSize;
+                    const placeY = (Math.floor(prev.player.y / GAME_CONFIG.blockSize) - 1) * GAME_CONFIG.blockSize;
+
+                    const targetRect = { x: placeX, y: placeY, width: GAME_CONFIG.blockSize, height: GAME_CONFIG.blockSize };
+
+                    const isOccupiedByBlock = prev.blocks.some(b => 
+                        !b.destroyed && 
+                        b.x === placeX && 
+                        b.y === placeY
+                    );
+
+                    const isOccupiedByEnemy = prev.enemies.some(e => {
+                        const enemyConfig = ENEMY_TYPES[e.type];
+                        const enemyRect = { x: e.x, y: e.y, width: enemyConfig.size, height: enemyConfig.size };
+                        return (
+                            targetRect.x < enemyRect.x + enemyRect.width &&
+                            targetRect.x + targetRect.width > enemyRect.x &&
+                            targetRect.y < enemyRect.y + enemyRect.height &&
+                            targetRect.y + targetRect.height > enemyRect.y
+                        );
+                    });
+                    
+                    let isOccupiedByRobot = false;
+                    if (!prev.robot.isDead) {
+                        const robotRect = { x: prev.robot.x, y: prev.robot.y, width: UI.ROBOT_SIZE, height: UI.ROBOT_SIZE };
+                        isOccupiedByRobot = (
+                            targetRect.x < robotRect.x + robotRect.width &&
+                            targetRect.x + targetRect.width > robotRect.x &&
+                            targetRect.y < robotRect.y + robotRect.height &&
+                            targetRect.y + targetRect.height > robotRect.y
+                        );
+                    }
+
+                    if (!isOccupiedByBlock && !isOccupiedByEnemy && !isOccupiedByRobot && placeY >= 0) {
+                        const newBlocks = [...prev.blocks, { x: placeX, y: placeY, type: blockToPlace, destroyed: false }];
+                        const newInventory = { ...prev.inventory, [inventoryKey]: prev.inventory[inventoryKey] - 1 };
+                        
+                        let newPlayerState = { ...prev.player };
+                        if (newInventory[inventoryKey] === 0) {
+                            const allowedForLevel = LEVEL_PLACEABLE_BLOCKS[prev.level] || PLACEABLE_BLOCKS;
+                            const remainingValidBlocks = allowedForLevel.filter(blockType => {
+                                const invKey = BLOCK_TO_INVENTORY_KEY[blockType];
+                                return newInventory[invKey] > 0;
+                            });
+
+                            if (remainingValidBlocks.length > 0) {
+                                newPlayerState.currentBlockType = remainingValidBlocks[0];
+                            }
+                        }
+                        
+                        return { ...prev, blocks: newBlocks, inventory: newInventory, player: newPlayerState };
+                    }
+                }
+                return prev;
+            });
         }
     };
     const handleKeyUp = (e) => keysRef.current.delete(e.code);
@@ -758,7 +881,7 @@ function RobotBuddySurvivor() {
   const restartGame = () => {
     setGameState({
         level: 1, score: 0, killsThisLevel: 0, gameStarted: false, gameOver: false, gameWon: false, showCrafting: false, dayNight: 0,
-        player: { x: 100, y: 300, health: 100, maxHealth: 100, hunger: 100, attacking: false, attackCooldown: 0, swordVisible: false, currentTool: 'WOODEN_SWORD', toolDurability: 30, armor: 0, speed: GAME_CONFIG.playerSpeed, damageMultiplier: 1 },
+        player: { x: 100, y: 300, health: 100, maxHealth: 100, hunger: 100, attacking: false, attackCooldown: 0, swordVisible: false, currentTool: 'WOODEN_SWORD', toolDurability: 30, armor: 0, speed: GAME_CONFIG.playerSpeed, damageMultiplier: 1, currentBlockType: 'WOOD' },
         robot: { x: 130, y: 320, health: 75, maxHealth: 75, energy: 100, maxEnergy: 100, attacking: false, attackCooldown: 0, swordVisible: false, upgraded: false, armor: 0, isDead: false, respawnTimer: 0 },
         inventory: { wood: 5, stone: 3, dirt: 0, coal: 0, iron_ore: 0, diamond: 0, obsidian: 0 },
         enemies: [], blocks: [], drops: [], lastSpawn: 0, miningBlock: null, miningProgress: 0,
@@ -780,6 +903,8 @@ function RobotBuddySurvivor() {
               <p className="text-gray-700 mb-2"><strong>• Arrow Keys:</strong> Move your character.</p>
               <p className="text-gray-700 mb-2"><strong>• Spacebar:</strong> Mine blocks when standing close.</p>
               <p className="text-gray-700 mb-2"><strong>• 'C' Key:</strong> Open the crafting menu.</p>
+              <p className="text-gray-700 mb-2"><strong>• 'Z' Key:</strong> Cycle through blocks to place.</p>
+              <p className="text-gray-700 mb-2"><strong>• 'X' Key:</strong> Place the selected block above you.</p>
             </div>
             <button
               onClick={startGame}
@@ -890,4 +1015,3 @@ function RobotBuddySurvivor() {
 
 export default RobotBuddySurvivor;
 export { GAME_CONFIG, BLOCK_TYPES, LEVEL_REQUIREMENTS, ENEMY_TYPES };
-
