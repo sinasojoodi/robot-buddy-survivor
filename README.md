@@ -59,6 +59,9 @@ This is a 2D survival game built with React and Vite. The game features a player
 *   `npm run dev`: Starts the Vite development server with Hot Module Replacement.
 *   `npm run build`: Builds the application for production.
 *   `npm run preview`: Serves the production build locally for preview.
+*   `npm test`: Runs the test suite.
+*   `npm run test:watch`: Runs tests in watch mode.
+*   `npm run test:coverage`: Generates test coverage report.
 
 ## 🎮 Game Controls
 
@@ -67,12 +70,35 @@ This is a 2D survival game built with React and Vite. The game features a player
 *   **'C' Key**: Toggle the crafting menu.
 *   **'ESC' Key**: Close the crafting menu.
 
+## 📁 Project Structure
+
+```
+robot-buddy-survivor/
+├── public/                    # Static assets
+├── src/                      # Source code
+│   ├── components/           # React components
+│   │   └── game.jsx         # Main game component
+│   ├── styles/              # CSS styles
+│   └── main.jsx            # Application entry point
+├── test/                    # Test files
+│   ├── components/          # Component tests
+│   ├── utils/               # Utility tests
+│   ├── integration/         # Integration tests
+│   └── setup.js            # Test configuration
+├── docs/                    # Documentation
+├── .github/                 # GitHub workflows
+├── Dockerfile              # Docker configuration
+├── package.json            # Dependencies and scripts
+└── README.md               # This file
+```
+
 ## 🛠️ Tech Stack
 
 *   **Vite**: Frontend tooling for a fast development experience.
 *   **React**: A JavaScript library for building user interfaces.
 *   **Tailwind CSS**: A utility-first CSS framework for styling.
 *   **JavaScript (ES6+)**: Core programming language.
+*   **Jest**: Testing framework with React Testing Library.
 
 ## 🤖 AI Development Tools
 
