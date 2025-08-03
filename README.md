@@ -74,6 +74,22 @@ This is a 2D survival game built with React and Vite. The game features a player
 *   **Tailwind CSS**: A utility-first CSS framework for styling.
 *   **JavaScript (ES6+)**: Core programming language.
 
+## 📁 Project Structure
+
+```
+robot-buddy-survivor/
+├── .github/          # GitHub workflows and CI/CD
+├── docs/             # Project documentation
+├── public/           # Static assets
+├── src/              # Source code
+│   ├── assets/       # Game assets (images, sounds)
+│   ├── components/   # React components
+│   ├── hooks/        # Custom React hooks
+│   ├── styles/       # CSS and styling files
+│   └── utils/        # Utility functions
+└── [config files]   # Vite, Tailwind, Docker configs
+```
+
 ## 🤖 AI Development Tools
 
 This code was produced using AI Tools: Claude Desktop, Google Gemini, Cursor
