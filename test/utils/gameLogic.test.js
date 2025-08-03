@@ -48,6 +48,15 @@ describe('Game Configuration', () => {
         expect(block.color).toMatch(/^#[0-9a-fA-F]{6}$/);
       });
     });
+
+    test('includes COAL block type with correct properties', () => {
+      expect(BLOCK_TYPES).toHaveProperty('COAL');
+      expect(BLOCK_TYPES.COAL).toHaveProperty('color');
+      expect(BLOCK_TYPES.COAL).toHaveProperty('breakable', true);
+      expect(BLOCK_TYPES.COAL).toHaveProperty('hardness', 1);
+      expect(BLOCK_TYPES.COAL).toHaveProperty('drops');
+      expect(BLOCK_TYPES.COAL.drops).toContain('coal');
+    });
   });
 
   describe('LEVEL_REQUIREMENTS', () => {
@@ -104,6 +113,45 @@ describe('Game Configuration', () => {
       });
     });
   });
+
+  describe('Block Placement System', () => {
+    test('all placeable block types should exist in BLOCK_TYPES', () => {
+      // Core placeable blocks that should exist
+      const expectedPlaceableBlocks = ['WOOD', 'DIRT', 'GRASS', 'STONE', 'COAL', 'IRON_ORE', 'DIAMOND_ORE', 'OBSIDIAN'];
+      
+      expectedPlaceableBlocks.forEach(blockType => {
+        expect(BLOCK_TYPES).toHaveProperty(blockType);
+      });
+    });
+
+    test('level-based block placement should follow logical progression', () => {
+      // Test that basic blocks are available at lower levels
+      // This tests the concept even if we can't directly access LEVEL_PLACEABLE_BLOCKS
+      const basicBlocks = ['WOOD', 'DIRT', 'GRASS'];
+      const advancedBlocks = ['DIAMOND_ORE', 'OBSIDIAN'];
+      
+      basicBlocks.forEach(blockType => {
+        expect(BLOCK_TYPES).toHaveProperty(blockType);
+        expect(BLOCK_TYPES[blockType].hardness).toBeLessThanOrEqual(2);
+      });
+      
+      advancedBlocks.forEach(blockType => {
+        expect(BLOCK_TYPES).toHaveProperty(blockType);
+        expect(BLOCK_TYPES[blockType].hardness).toBeGreaterThan(2);
+      });
+    });
+
+    test('block to inventory mapping should be consistent', () => {
+      // Test that blocks that drop items match expected inventory keys
+      expect(BLOCK_TYPES.DIRT.drops).toContain('dirt');
+      expect(BLOCK_TYPES.STONE.drops).toContain('stone');
+      expect(BLOCK_TYPES.COAL.drops).toContain('coal');
+      expect(BLOCK_TYPES.IRON_ORE.drops).toContain('iron_ore');
+      expect(BLOCK_TYPES.DIAMOND_ORE.drops).toContain('diamond');
+      expect(BLOCK_TYPES.WOOD.drops).toContain('wood');
+      expect(BLOCK_TYPES.OBSIDIAN.drops).toContain('obsidian');
+    });
+  });
 });
 
 // Mock collision detection functions
@@ -145,6 +193,27 @@ describe('Game Logic Utilities', () => {
 
       expect(checkCollision(rect1, rect2)).toBe(true);
       expect(checkCollision(rect1, rect3)).toBe(false);
+    });
+
+    test('block placement collision detection', () => {
+      const isOccupiedByBlock = (blocks, targetX, targetY, blockSize) => {
+        return blocks.some(block => 
+          !block.destroyed && 
+          block.x === targetX && 
+          block.y === targetY
+        );
+      };
+
+      const blocks = [
+        { x: 0, y: 0, destroyed: false },
+        { x: 32, y: 0, destroyed: false },
+        { x: 64, y: 0, destroyed: true }  // This one is destroyed
+      ];
+
+      expect(isOccupiedByBlock(blocks, 0, 0, 32)).toBe(true);
+      expect(isOccupiedByBlock(blocks, 32, 0, 32)).toBe(true);
+      expect(isOccupiedByBlock(blocks, 64, 0, 32)).toBe(false); // destroyed block
+      expect(isOccupiedByBlock(blocks, 96, 0, 32)).toBe(false); // empty space
     });
   });
 

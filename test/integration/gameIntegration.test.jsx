@@ -25,11 +25,15 @@ describe('Game Integration Tests', () => {
       expect(screen.getByText(/Arrow Keys:/i)).toBeInTheDocument();
       expect(screen.getByText(/Spacebar:/i)).toBeInTheDocument();
       expect(screen.getByText(/'C' Key:/i)).toBeInTheDocument();
+      expect(screen.getByText(/'Z' Key:/i)).toBeInTheDocument();
+      expect(screen.getByText(/'X' Key:/i)).toBeInTheDocument();
       
       // Verify instruction details
       expect(screen.getByText(/Move your character/i)).toBeInTheDocument();
       expect(screen.getByText(/Mine blocks when standing close/i)).toBeInTheDocument();
       expect(screen.getByText(/Open the crafting menu/i)).toBeInTheDocument();
+      expect(screen.getByText(/Cycle through blocks to place/i)).toBeInTheDocument();
+      expect(screen.getByText(/Place the selected block above you/i)).toBeInTheDocument();
     });
 
     test('button interaction works', async () => {
@@ -102,6 +106,29 @@ describe('Game Integration Tests', () => {
       // Component should still be rendered
       expect(screen.getByText(/Robot Buddy Survivor/i)).toBeInTheDocument();
     });
+
+    test('handles new block placement keyboard events', () => {
+      render(<RobotBuddySurvivor />);
+      
+      // Fire block placement keyboard events
+      fireEvent.keyDown(document, { key: 'z', code: 'KeyZ' });
+      fireEvent.keyDown(document, { key: 'x', code: 'KeyX' });
+      
+      // Component should still be rendered without crashing
+      expect(screen.getByText(/Robot Buddy Survivor/i)).toBeInTheDocument();
+    });
+
+    test('handles crafting and other special keys', () => {
+      render(<RobotBuddySurvivor />);
+      
+      // Fire special keyboard events
+      fireEvent.keyDown(document, { key: 'c', code: 'KeyC' });
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+      fireEvent.keyDown(document, { key: ' ', code: 'Space' });
+      
+      // Component should still be rendered without crashing
+      expect(screen.getByText(/Robot Buddy Survivor/i)).toBeInTheDocument();
+    });
   });
 
   describe('Performance Considerations', () => {
@@ -142,6 +169,46 @@ describe('Game Integration Tests', () => {
       const button = screen.getByText(/Start Mining Adventure/i);
       expect(button).toHaveClass('hover:bg-green-800');
       expect(button).toHaveClass('bg-green-600');
+    });
+  });
+
+  describe('Block Placement System Integration', () => {
+    test('component handles block placement workflow without errors', () => {
+      render(<RobotBuddySurvivor />);
+      
+      // Simulate a complete block placement workflow
+      // 1. Fire Z key to cycle through blocks
+      fireEvent.keyDown(document, { key: 'z', code: 'KeyZ' });
+      fireEvent.keyUp(document, { key: 'z', code: 'KeyZ' });
+      
+      // 2. Fire X key to attempt block placement
+      fireEvent.keyDown(document, { key: 'x', code: 'KeyX' });
+      fireEvent.keyUp(document, { key: 'x', code: 'KeyX' });
+      
+      // Component should remain stable
+      expect(screen.getByText(/Robot Buddy Survivor/i)).toBeInTheDocument();
+    });
+
+    test('keyboard event sequence does not break component', () => {
+      render(<RobotBuddySurvivor />);
+      
+      // Simulate rapid key presses
+      const keySequence = [
+        { key: 'z', code: 'KeyZ' },
+        { key: 'x', code: 'KeyX' },
+        { key: 'c', code: 'KeyC' },
+        { key: 'Escape', code: 'Escape' },
+        { key: 'z', code: 'KeyZ' },
+        { key: 'x', code: 'KeyX' }
+      ];
+      
+      keySequence.forEach(({ key, code }) => {
+        fireEvent.keyDown(document, { key, code });
+        fireEvent.keyUp(document, { key, code });
+      });
+      
+      // Component should remain stable after rapid key sequence
+      expect(screen.getByText(/Robot Buddy Survivor/i)).toBeInTheDocument();
     });
   });
 });
