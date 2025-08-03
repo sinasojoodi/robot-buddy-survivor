@@ -28,15 +28,95 @@ const GAME_CONFIG = {
   miningRange: 40,
 };
 
+// --- COLORS ---
+const COLORS = {
+  // Player colors
+  PLAYER_DEFAULT: '#4dabf7',
+  PLAYER_ATTACKING: '#ff6b6b',
+  PLAYER_HELMET: '#ffd700',
+  PLAYER_SWORD: '#c0c0c0',
+  
+  // Robot colors
+  ROBOT_DEFAULT: '#9c27b0',
+  ROBOT_UPGRADED: '#ff6b9d',
+  ROBOT_ATTACKING: '#ff9800',
+  ROBOT_EYE_NORMAL: '#00ff00',
+  ROBOT_EYE_LOW_ENERGY: '#ff6600',
+  ROBOT_EYE_ATTACKING: '#ff0000',
+  ROBOT_LASER: '#00ffff',
+  
+  // UI colors
+  HEALTH_BAR_BG: '#ff0000',
+  HEALTH_BAR_FG: '#00ff00',
+  HUNGER_BAR_BG: '#8b4513',
+  HUNGER_BAR_FG: '#ffa500',
+  ENERGY_BAR_BG: '#666',
+  ENERGY_BAR_FG: '#00bfff',
+  
+  // Environment colors
+  SKY_DAY_TOP: '#87CEEB',
+  SKY_DAY_BOTTOM: '#98FB98',
+  MINING_BASE_ALPHA: 0.3,
+  MINING_MAX_ALPHA: 0.7,
+  
+  // General colors
+  BLACK: '#000',
+  WHITE: '#fff',
+  YELLOW: '#ffff00',
+};
+
+// --- TIMING VALUES ---
+const TIMING = {
+  PLAYER_ATTACK_COOLDOWN: 800,
+  ROBOT_ATTACK_COOLDOWN: 1000,
+  ENEMY_ATTACK_COOLDOWN: 1200,
+  ROBOT_RESPAWN_TIME: 10000,
+  DROP_LIFETIME: 30000,
+  GAME_LOOP_INTERVAL: 16,
+  PLAYER_ATTACK_ANIMATION_THRESHOLD: 600,
+  ROBOT_ATTACK_ANIMATION_THRESHOLD: 800,
+};
+
+// --- DISTANCES ---
+const DISTANCES = {
+  COLLISION_RANGE: 45,
+  PICKUP_RANGE: 25,
+  ROBOT_FOLLOW_DISTANCE: 70,
+  ENEMY_CHASE_DISTANCE: 30,
+};
+
+// --- UI DIMENSIONS ---
+const UI = {
+  PLAYER_SIZE: 32,
+  ROBOT_SIZE: 24,
+  DROP_SIZE: 12,
+  HEALTH_BAR_WIDTH: 180,
+  HEALTH_BAR_HEIGHT: 15,
+  HUNGER_BAR_HEIGHT: 10,
+  ROBOT_BAR_WIDTH: 150,
+  INVENTORY_PANEL: { x: 380, y: 500, width: 400, height: 90 },
+};
+
+// --- ITEM COLORS (extracted from BLOCK_TYPES to avoid repetition) ---
+const ITEM_COLORS = {
+  wood: '#daa520',
+  stone: '#666666',
+  dirt: '#8b4513',
+  coal: '#2f2f2f',
+  iron_ore: '#cd853f',
+  diamond: '#b9f2ff',
+  obsidian: '#1a1a1a',
+};
+
 // --- BLOCK TYPES ---
 const BLOCK_TYPES = {
   GRASS: { color: '#4a9c2d', breakable: true, hardness: 1, drops: ['dirt'] },
-  DIRT: { color: '#8b4513', breakable: true, hardness: 1, drops: ['dirt'] },
-  STONE: { color: '#666666', breakable: true, hardness: 2, drops: ['stone'] },
-  IRON_ORE: { color: '#cd853f', breakable: true, hardness: 3, drops: ['iron_ore'] },
-  DIAMOND_ORE: { color: '#b9f2ff', breakable: true, hardness: 5, drops: ['diamond'] },
-  WOOD: { color: '#daa520', breakable: true, hardness: 1.5, drops: ['wood'] },
-  OBSIDIAN: { color: '#1a1a1a', breakable: true, hardness: 8, drops: ['obsidian'] }
+  DIRT: { color: ITEM_COLORS.dirt, breakable: true, hardness: 1, drops: ['dirt'] },
+  STONE: { color: ITEM_COLORS.stone, breakable: true, hardness: 2, drops: ['stone'] },
+  IRON_ORE: { color: ITEM_COLORS.iron_ore, breakable: true, hardness: 3, drops: ['iron_ore'] },
+  DIAMOND_ORE: { color: ITEM_COLORS.diamond, breakable: true, hardness: 5, drops: ['diamond'] },
+  WOOD: { color: ITEM_COLORS.wood, breakable: true, hardness: 1.5, drops: ['wood'] },
+  OBSIDIAN: { color: ITEM_COLORS.obsidian, breakable: true, hardness: 8, drops: ['obsidian'] }
 };
 
 // --- LEVEL REQUIREMENTS ---
@@ -55,11 +135,11 @@ const ENEMY_TYPES = {
 
 // --- DROP TABLES ---
 const DROP_TABLES = {
-  ZOMBIE: [{ item: 'wood', weight: 40, color: '#daa520' }, { item: 'stone', weight: 30, color: '#666666' }],
-  SKELETON: [{ item: 'stone', weight: 35, color: '#666666' }, { item: 'coal', weight: 25, color: '#2f2f2f' }],
-  CREEPER: [{ item: 'coal', weight: 40, color: '#2f2f2f' }, { item: 'iron_ore', weight: 20, color: '#cd853f' }],
-  ENDERMAN: [{ item: 'iron_ore', weight: 30, color: '#cd853f' }, { item: 'diamond', weight: 15, color: '#b9f2ff' }],
-  DRAGON: [{ item: 'diamond', weight: 40, color: '#b9f2ff' }, { item: 'obsidian', weight: 30, color: '#1a1a1a' }]
+  ZOMBIE: [{ item: 'wood', weight: 40, color: ITEM_COLORS.wood }, { item: 'stone', weight: 30, color: ITEM_COLORS.stone }],
+  SKELETON: [{ item: 'stone', weight: 35, color: ITEM_COLORS.stone }, { item: 'coal', weight: 25, color: ITEM_COLORS.coal }],
+  CREEPER: [{ item: 'coal', weight: 40, color: ITEM_COLORS.coal }, { item: 'iron_ore', weight: 20, color: ITEM_COLORS.iron_ore }],
+  ENDERMAN: [{ item: 'iron_ore', weight: 30, color: ITEM_COLORS.iron_ore }, { item: 'diamond', weight: 15, color: ITEM_COLORS.diamond }],
+  DRAGON: [{ item: 'diamond', weight: 40, color: ITEM_COLORS.diamond }, { item: 'obsidian', weight: 30, color: ITEM_COLORS.obsidian }]
 };
 
 // --- TOOLS ---
@@ -357,11 +437,11 @@ function RobotBuddySurvivor() {
       if (keys.has('ArrowUp')) newY -= newState.player.speed;
       if (keys.has('ArrowDown')) newY += newState.player.speed;
       
-      newX = Math.max(0, Math.min(newX, GAME_CONFIG.width - 32));
-      newY = Math.max(0, Math.min(newY, GAME_CONFIG.height - 32));
+      newX = Math.max(0, Math.min(newX, GAME_CONFIG.width - UI.PLAYER_SIZE));
+      newY = Math.max(0, Math.min(newY, GAME_CONFIG.height - UI.PLAYER_SIZE));
 
-      if (!checkBlockCollision(newX, newState.player.y, 32, 32, newState.blocks)) newState.player.x = newX;
-      if (!checkBlockCollision(newState.player.x, newY, 32, 32, newState.blocks)) newState.player.y = newY;
+      if (!checkBlockCollision(newX, newState.player.y, UI.PLAYER_SIZE, UI.PLAYER_SIZE, newState.blocks)) newState.player.x = newX;
+      if (!checkBlockCollision(newState.player.x, newY, UI.PLAYER_SIZE, UI.PLAYER_SIZE, newState.blocks)) newState.player.y = newY;
 
       handleMining(newState);
 
@@ -369,7 +449,7 @@ function RobotBuddySurvivor() {
       newState.player.swordVisible = nearbyEnemiesPlayer.length > 0 || newState.miningBlock;
       if (nearbyEnemiesPlayer.length > 0 && newState.player.attackCooldown <= 0 && !newState.miningBlock) {
         newState.player.attacking = true;
-        newState.player.attackCooldown = 800;
+        newState.player.attackCooldown = TIMING.PLAYER_ATTACK_COOLDOWN;
         const tool = TOOLS[newState.player.currentTool];
         const damage = tool.damage * newState.player.damageMultiplier;
 
@@ -385,19 +465,19 @@ function RobotBuddySurvivor() {
         const robotDx = newState.player.x - newState.robot.x;
         const robotDy = newState.player.y - newState.robot.y;
         const robotDistance = Math.hypot(robotDx, robotDy);
-        if (robotDistance > 70) {
+        if (robotDistance > DISTANCES.ROBOT_FOLLOW_DISTANCE) {
           const energyMultiplier = newState.robot.energy > 20 ? 1 : 0.5;
           const newRobotX = newState.robot.x + (robotDx / robotDistance) * GAME_CONFIG.robotSpeed * energyMultiplier;
           const newRobotY = newState.robot.y + (robotDy / robotDistance) * GAME_CONFIG.robotSpeed * energyMultiplier;
-          if (!checkBlockCollision(newRobotX, newState.robot.y, 24, 24, newState.blocks)) newState.robot.x = newRobotX;
-          if (!checkBlockCollision(newState.robot.x, newRobotY, 24, 24, newState.blocks)) newState.robot.y = newRobotY;
+          if (!checkBlockCollision(newRobotX, newState.robot.y, UI.ROBOT_SIZE, UI.ROBOT_SIZE, newState.blocks)) newState.robot.x = newRobotX;
+          if (!checkBlockCollision(newState.robot.x, newRobotY, UI.ROBOT_SIZE, UI.ROBOT_SIZE, newState.blocks)) newState.robot.y = newRobotY;
         }
 
         const nearbyEnemiesRobot = newState.enemies.filter(e => Math.hypot(e.x - newState.robot.x, e.y - newState.robot.y) < GAME_CONFIG.robotAttackRange);
         newState.robot.swordVisible = nearbyEnemiesRobot.length > 0;
         if (nearbyEnemiesRobot.length > 0 && newState.robot.attackCooldown <= 0 && newState.robot.energy > 10) {
           newState.robot.attacking = true;
-          newState.robot.attackCooldown = 1000;
+          newState.robot.attackCooldown = TIMING.ROBOT_ATTACK_COOLDOWN;
           newState.robot.energy -= 5;
           const robotDamage = newState.robot.upgraded ? 50 : 30;
           nearbyEnemiesRobot[0].health -= Math.max(1, robotDamage - ENEMY_TYPES[nearbyEnemiesRobot[0].type].armor);
@@ -414,7 +494,7 @@ function RobotBuddySurvivor() {
           const dx = targetX - enemy.x;
           const dy = targetY - enemy.y;
           const dist = Math.hypot(dx, dy);
-          if (dist > 30) {
+          if (dist > DISTANCES.ENEMY_CHASE_DISTANCE) {
               const nightSpeedBonus = newState.dayNight > 50 ? 1.1 : 1;
               const newEnemyX = enemy.x + (dx / dist) * enemyConfig.speed * nightSpeedBonus;
               const newEnemyY = enemy.y + (dy / dist) * enemyConfig.speed * nightSpeedBonus;
@@ -423,11 +503,11 @@ function RobotBuddySurvivor() {
           }
 
           const now = Date.now();
-          if (Math.hypot(enemy.x - newState.player.x, enemy.y - newState.player.y) < 45 && now - enemy.lastAttack > 1200) {
+          if (Math.hypot(enemy.x - newState.player.x, enemy.y - newState.player.y) < DISTANCES.COLLISION_RANGE && now - enemy.lastAttack > TIMING.ENEMY_ATTACK_COOLDOWN) {
               newState.player.health -= Math.max(1, enemyConfig.damage - newState.player.armor);
               enemy.lastAttack = now;
           }
-          if (!newState.robot.isDead && Math.hypot(enemy.x - newState.robot.x, enemy.y - newState.robot.y) < 45 && now - (enemy.lastRobotAttack || 0) > 1200) {
+          if (!newState.robot.isDead && Math.hypot(enemy.x - newState.robot.x, enemy.y - newState.robot.y) < DISTANCES.COLLISION_RANGE && now - (enemy.lastRobotAttack || 0) > TIMING.ENEMY_ATTACK_COOLDOWN) {
               newState.robot.health -= Math.max(1, enemyConfig.damage - newState.robot.armor);
               enemy.lastRobotAttack = now;
           }
@@ -444,17 +524,17 @@ function RobotBuddySurvivor() {
         newState.enemies = newState.enemies.filter(e => e.health > 0);
       }
 
-      newState.player.attackCooldown = Math.max(0, newState.player.attackCooldown - 16);
-      newState.robot.attackCooldown = Math.max(0, newState.robot.attackCooldown - 16);
-      newState.player.attacking = newState.player.attackCooldown > 600;
-      newState.robot.attacking = newState.robot.attackCooldown > 800;
+      newState.player.attackCooldown = Math.max(0, newState.player.attackCooldown - TIMING.GAME_LOOP_INTERVAL);
+      newState.robot.attackCooldown = Math.max(0, newState.robot.attackCooldown - TIMING.GAME_LOOP_INTERVAL);
+      newState.player.attacking = newState.player.attackCooldown > TIMING.PLAYER_ATTACK_ANIMATION_THRESHOLD;
+      newState.robot.attacking = newState.robot.attackCooldown > TIMING.ROBOT_ATTACK_ANIMATION_THRESHOLD;
 
       if (!newState.robot.isDead && newState.robot.health <= 0) {
         newState.robot.isDead = true;
-        newState.robot.respawnTimer = 10000;
+        newState.robot.respawnTimer = TIMING.ROBOT_RESPAWN_TIME;
       }
       if (newState.robot.isDead) {
-        newState.robot.respawnTimer -= 16;
+                  newState.robot.respawnTimer -= TIMING.GAME_LOOP_INTERVAL;
         if (newState.robot.respawnTimer <= 0) {
           newState.robot.isDead = false;
           newState.robot.health = newState.robot.maxHealth;
@@ -465,11 +545,11 @@ function RobotBuddySurvivor() {
       }
 
       newState.drops = newState.drops.filter(drop => {
-        if (Math.hypot(drop.x - newState.player.x, drop.y - newState.player.y) < 25) {
+        if (Math.hypot(drop.x - newState.player.x, drop.y - newState.player.y) < DISTANCES.PICKUP_RANGE) {
           newState.inventory[drop.item] = (newState.inventory[drop.item] || 0) + 1;
           return false;
         }
-        return (Date.now() - drop.createdTime) < 30000;
+                  return (Date.now() - drop.createdTime) < TIMING.DROP_LIFETIME;
       });
 
       const requiredKills = LEVEL_REQUIREMENTS[newState.level];
@@ -506,8 +586,8 @@ function RobotBuddySurvivor() {
       gradient.addColorStop(0, `rgb(${20 - nightIntensity * 10}, ${20 - nightIntensity * 10}, ${60 - nightIntensity * 20})`);
       gradient.addColorStop(1, `rgb(10, 10, 30)`);
     } else {
-      gradient.addColorStop(0, '#87CEEB');
-      gradient.addColorStop(1, '#98FB98');
+      gradient.addColorStop(0, COLORS.SKY_DAY_TOP);
+      gradient.addColorStop(1, COLORS.SKY_DAY_BOTTOM);
     }
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, GAME_CONFIG.width, GAME_CONFIG.height);
@@ -516,40 +596,40 @@ function RobotBuddySurvivor() {
       if (!block.destroyed) {
         ctx.fillStyle = BLOCK_TYPES[block.type].color;
         ctx.fillRect(block.x, block.y, GAME_CONFIG.blockSize, GAME_CONFIG.blockSize);
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = COLORS.BLACK;
         ctx.lineWidth = 1;
         ctx.strokeRect(block.x, block.y, GAME_CONFIG.blockSize, GAME_CONFIG.blockSize);
         if (gameState.miningBlock?.x === block.x && gameState.miningBlock?.y === block.y) {
-          ctx.fillStyle = `rgba(255, 255, 0, ${0.3 + (gameState.miningProgress / 100) * 0.4})`;
+          ctx.fillStyle = `rgba(255, 255, 0, ${COLORS.MINING_BASE_ALPHA + (gameState.miningProgress / 100) * (COLORS.MINING_MAX_ALPHA - COLORS.MINING_BASE_ALPHA)})`;
           ctx.fillRect(block.x, block.y, GAME_CONFIG.blockSize, GAME_CONFIG.blockSize);
         }
       }
     });
 
-    ctx.fillStyle = gameState.player.attacking ? '#ff6b6b' : '#4dabf7';
-    ctx.fillRect(gameState.player.x, gameState.player.y, 32, 32);
-    ctx.strokeStyle = '#000';
+    ctx.fillStyle = gameState.player.attacking ? COLORS.PLAYER_ATTACKING : COLORS.PLAYER_DEFAULT;
+    ctx.fillRect(gameState.player.x, gameState.player.y, UI.PLAYER_SIZE, UI.PLAYER_SIZE);
+    ctx.strokeStyle = COLORS.BLACK;
     ctx.lineWidth = 2;
-    ctx.strokeRect(gameState.player.x, gameState.player.y, 32, 32);
-    ctx.fillStyle = '#ffd700';
+    ctx.strokeRect(gameState.player.x, gameState.player.y, UI.PLAYER_SIZE, UI.PLAYER_SIZE);
+    ctx.fillStyle = COLORS.PLAYER_HELMET;
     ctx.fillRect(gameState.player.x + 6, gameState.player.y - 4, 20, 8);
     if (gameState.player.swordVisible) {
-      ctx.fillStyle = '#c0c0c0';
+      ctx.fillStyle = COLORS.PLAYER_SWORD;
       ctx.fillRect(gameState.player.x + 35, gameState.player.y + 10, 25, 6);
     }
 
     if (!gameState.robot.isDead) {
-      const robotColor = gameState.robot.upgraded ? '#ff6b9d' : '#9c27b0';
-      ctx.fillStyle = gameState.robot.attacking ? '#ff9800' : robotColor;
-      ctx.fillRect(gameState.robot.x, gameState.robot.y, 24, 24);
-      ctx.strokeStyle = '#000';
-      ctx.strokeRect(gameState.robot.x, gameState.robot.y, 24, 24);
-      const eyeColor = gameState.robot.energy > 20 ? '#00ff00' : '#ff6600';
-      ctx.fillStyle = gameState.robot.attacking ? '#ff0000' : eyeColor;
+      const robotColor = gameState.robot.upgraded ? COLORS.ROBOT_UPGRADED : COLORS.ROBOT_DEFAULT;
+      ctx.fillStyle = gameState.robot.attacking ? COLORS.ROBOT_ATTACKING : robotColor;
+             ctx.fillRect(gameState.robot.x, gameState.robot.y, UI.ROBOT_SIZE, UI.ROBOT_SIZE);
+       ctx.strokeStyle = COLORS.BLACK;
+       ctx.strokeRect(gameState.robot.x, gameState.robot.y, UI.ROBOT_SIZE, UI.ROBOT_SIZE);
+      const eyeColor = gameState.robot.energy > 20 ? COLORS.ROBOT_EYE_NORMAL : COLORS.ROBOT_EYE_LOW_ENERGY;
+      ctx.fillStyle = gameState.robot.attacking ? COLORS.ROBOT_EYE_ATTACKING : eyeColor;
       ctx.fillRect(gameState.robot.x + 6, gameState.robot.y + 6, 4, 4);
       ctx.fillRect(gameState.robot.x + 14, gameState.robot.y + 6, 4, 4);
       if (gameState.robot.swordVisible) {
-        ctx.fillStyle = '#00ffff';
+        ctx.fillStyle = COLORS.ROBOT_LASER;
         ctx.fillRect(gameState.robot.x + 27, gameState.robot.y + 8, 20, 4);
       }
     }
@@ -561,37 +641,37 @@ function RobotBuddySurvivor() {
         ctx.arc(enemy.x + radius, enemy.y + radius, radius, 0, 2 * Math.PI);
         ctx.fillStyle = enemyConfig.color;
         ctx.fill();
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = COLORS.BLACK;
         ctx.stroke();
         const healthPercent = enemy.health / enemy.maxHealth;
-        ctx.fillStyle = '#ff0000';
-        ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size, 4);
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size * healthPercent, 4);
+                 ctx.fillStyle = COLORS.HEALTH_BAR_BG;
+         ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size, UI.HEALTH_BAR_HEIGHT);
+         ctx.fillStyle = COLORS.HEALTH_BAR_FG;
+         ctx.fillRect(enemy.x, enemy.y - 8, enemyConfig.size * healthPercent, UI.HEALTH_BAR_HEIGHT);
     });
 
     gameState.drops.forEach(drop => {
         ctx.fillStyle = drop.color;
-        ctx.fillRect(drop.x, drop.y, 12, 12);
-        ctx.strokeStyle = '#fff';
-        ctx.strokeRect(drop.x, drop.y, 12, 12);
+                 ctx.fillRect(drop.x, drop.y, UI.DROP_SIZE, UI.DROP_SIZE);
+         ctx.strokeStyle = COLORS.WHITE;
+         ctx.strokeRect(drop.x, drop.y, UI.DROP_SIZE, UI.DROP_SIZE);
     });
 
     // --- UI ---
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = COLORS.WHITE;
     ctx.font = 'bold 18px Arial';
     ctx.fillText(`Level: ${gameState.level}`, 10, 25);
     ctx.fillText(`Score: ${gameState.score}`, 10, 45);
     ctx.fillText(`Kills: ${gameState.killsThisLevel} / ${LEVEL_REQUIREMENTS[gameState.level]}`, 10, 65);
     
     // Player Stats
-    ctx.fillStyle = '#ff0000'; ctx.fillRect(10, 510, 180, 15);
-    ctx.fillStyle = '#00ff00'; ctx.fillRect(10, 510, 180 * (gameState.player.health / gameState.player.maxHealth), 15);
-    ctx.fillStyle = '#8b4513'; ctx.fillRect(10, 530, 180, 10);
-    ctx.fillStyle = '#ffa500'; ctx.fillRect(10, 530, 180 * (gameState.player.hunger / 100), 10);
+         ctx.fillStyle = COLORS.HEALTH_BAR_BG; ctx.fillRect(10, 510, UI.HEALTH_BAR_WIDTH, UI.HEALTH_BAR_HEIGHT);
+     ctx.fillStyle = COLORS.HEALTH_BAR_FG; ctx.fillRect(10, 510, UI.HEALTH_BAR_WIDTH * (gameState.player.health / gameState.player.maxHealth), UI.HEALTH_BAR_HEIGHT);
+     ctx.fillStyle = COLORS.HUNGER_BAR_BG; ctx.fillRect(10, 530, UI.HEALTH_BAR_WIDTH, UI.HUNGER_BAR_HEIGHT);
+     ctx.fillStyle = COLORS.HUNGER_BAR_FG; ctx.fillRect(10, 530, UI.HEALTH_BAR_WIDTH * (gameState.player.hunger / 100), UI.HUNGER_BAR_HEIGHT);
     
     // ADDED: Player numeric stats
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = COLORS.WHITE;
     ctx.font = 'bold 12px Arial';
     const playerDamage = (TOOLS[gameState.player.currentTool].damage * gameState.player.damageMultiplier).toFixed(0);
     ctx.fillText(`HP: ${Math.ceil(gameState.player.health)} / ${gameState.player.maxHealth}`, 12, 522);
@@ -600,33 +680,33 @@ function RobotBuddySurvivor() {
 
     // Robot Stats
     if (!gameState.robot.isDead) {
-        ctx.fillStyle = '#ff0000'; ctx.fillRect(200, 510, 150, 15);
-        ctx.fillStyle = '#00ff00'; ctx.fillRect(200, 510, 150 * (gameState.robot.health / gameState.robot.maxHealth), 15);
-        ctx.fillStyle = '#666'; ctx.fillRect(200, 530, 150, 10);
-        ctx.fillStyle = '#00bfff'; ctx.fillRect(200, 530, 150 * (gameState.robot.energy / gameState.robot.maxEnergy), 10);
+                 ctx.fillStyle = COLORS.HEALTH_BAR_BG; ctx.fillRect(200, 510, UI.ROBOT_BAR_WIDTH, UI.HEALTH_BAR_HEIGHT);
+         ctx.fillStyle = COLORS.HEALTH_BAR_FG; ctx.fillRect(200, 510, UI.ROBOT_BAR_WIDTH * (gameState.robot.health / gameState.robot.maxHealth), UI.HEALTH_BAR_HEIGHT);
+         ctx.fillStyle = COLORS.ENERGY_BAR_BG; ctx.fillRect(200, 530, UI.ROBOT_BAR_WIDTH, UI.HUNGER_BAR_HEIGHT);
+         ctx.fillStyle = COLORS.ENERGY_BAR_FG; ctx.fillRect(200, 530, UI.ROBOT_BAR_WIDTH * (gameState.robot.energy / gameState.robot.maxEnergy), UI.HUNGER_BAR_HEIGHT);
         
         // ADDED: Robot numeric stats
-        ctx.fillStyle = '#fff';
+        ctx.fillStyle = COLORS.WHITE;
         ctx.font = 'bold 12px Arial';
         const robotDamage = gameState.robot.upgraded ? 50 : 30;
         ctx.fillText(`HP: ${Math.ceil(gameState.robot.health)} / ${gameState.robot.maxHealth}`, 202, 522);
         ctx.fillText(`DMG: ${robotDamage}`, 290, 522);
 
     } else {
-        const respawnProgress = 1 - (gameState.robot.respawnTimer / 10000);
-        ctx.fillStyle = '#ff0000'; ctx.fillRect(200, 510, 150, 15);
-        ctx.fillStyle = '#ffff00'; ctx.fillRect(200, 510, 150 * respawnProgress, 15);
-        ctx.fillStyle = '#000'; ctx.font = '12px Arial';
+        const respawnProgress = 1 - (gameState.robot.respawnTimer / TIMING.ROBOT_RESPAWN_TIME);
+                 ctx.fillStyle = COLORS.HEALTH_BAR_BG; ctx.fillRect(200, 510, UI.ROBOT_BAR_WIDTH, UI.HEALTH_BAR_HEIGHT);
+         ctx.fillStyle = COLORS.YELLOW; ctx.fillRect(200, 510, UI.ROBOT_BAR_WIDTH * respawnProgress, UI.HEALTH_BAR_HEIGHT);
+        ctx.fillStyle = COLORS.BLACK; ctx.font = '12px Arial';
         ctx.fillText('Robot Respawning...', 202, 523);
     }
 
     // Inventory
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(380, 500, 400, 90);
-    ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Arial'; ctx.fillText('INVENTORY', 385, 518);
+         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(UI.INVENTORY_PANEL.x, UI.INVENTORY_PANEL.y, UI.INVENTORY_PANEL.width, UI.INVENTORY_PANEL.height);
+    ctx.fillStyle = COLORS.WHITE; ctx.font = 'bold 14px Arial'; ctx.fillText('INVENTORY', 385, 518);
     Object.entries(gameState.inventory).forEach(([item, amount], index) => {
       const x = 385 + (index % 4) * 95;
       const y = 535 + Math.floor(index / 4) * 20;
-      ctx.fillStyle = amount > 0 ? '#00ff00' : '#888888';
+      ctx.fillStyle = amount > 0 ? COLORS.WHITE : '#888888';
       ctx.fillText(`${item.replace('_', ' ')}: ${amount}`, x, y);
     });
 
@@ -655,7 +735,7 @@ function RobotBuddySurvivor() {
 
   useEffect(() => {
     if (gameState.gameStarted && !gameState.gameOver) {
-        const id = setInterval(gameLoop, 16);
+        const id = setInterval(gameLoop, TIMING.GAME_LOOP_INTERVAL);
         return () => clearInterval(id);
     }
   }, [gameState.gameStarted, gameState.gameOver, gameLoop]);
