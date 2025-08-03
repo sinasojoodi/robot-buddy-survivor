@@ -1,0 +1,10 @@
+# Public Assets Directory
+
+Place static assets here that should be served directly by Vite:
+- favicon.ico
+- robots.txt  
+- sitemap.xml
+- apple-touch-icon.png
+- images that you reference by absolute path (e.g., /logo.png)
+
+Files in this directory are served as-is without bundling or transformation.

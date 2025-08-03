@@ -1,0 +1,9 @@
+# Utils Directory
+
+Place utility functions here:
+- Pure functions that do one thing well
+- Format functions (formatDate, formatCurrency, etc.)
+- Helper functions (generateId, deepClone, etc.)
+- Data manipulation utilities
+
+Keep functions small, pure, and well-tested.

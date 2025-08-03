@@ -1,0 +1,9 @@
+# Assets Directory
+
+Place application assets here that need to be bundled:
+- Images (logo.svg, background.jpg, etc.)
+- Fonts
+- SVG icons
+- Other media files
+
+These assets should be imported in your components and will be processed by Vite's bundler.

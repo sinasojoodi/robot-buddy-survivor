@@ -1,0 +1,7 @@
+# Hooks Directory
+
+Place custom React hooks here:
+- useAuth, useDebounce, useLocalStorage, etc.
+- Any function that starts with 'use'
+- Keep them pure and reusable
+- Include proper TypeScript types if using TypeScript
