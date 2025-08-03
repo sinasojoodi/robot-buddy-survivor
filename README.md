@@ -74,6 +74,53 @@ This is a 2D survival game built with React and Vite. The game features a player
 *   **Tailwind CSS**: A utility-first CSS framework for styling.
 *   **JavaScript (ES6+)**: Core programming language.
 
+## 📁 Project Structure
+
+```
+robot-buddy-survivor/
+├── 📁 .github/                    # GitHub configuration
+│   └── 📁 workflows/              # CI/CD workflows
+│       └── node.js.yml            # Node.js CI workflow
+├── 📁 docs/                       # Documentation files
+│   └── prd.md                     # Product Requirements Document
+├── 📁 public/                     # Static assets served directly
+│   └── .gitkeep                   # Placeholder for future assets
+├── 📁 src/                        # Source code
+│   ├── 📁 assets/                 # Game assets (images, sounds, etc.)
+│   │   └── .gitkeep               # Placeholder for future assets
+│   ├── 📁 components/             # React components
+│   │   └── game.jsx               # Main game component (813 lines)
+│   ├── 📁 hooks/                  # Custom React hooks
+│   │   └── .gitkeep               # Placeholder for future hooks
+│   ├── 📁 styles/                 # CSS and styling files
+│   │   └── index.css              # Global styles and Tailwind imports
+│   ├── 📁 utils/                  # Utility functions and helpers
+│   │   └── .gitkeep               # Placeholder for future utilities
+│   └── main.jsx                   # Application entry point
+├── .dockerignore                  # Docker ignore rules
+├── .gitignore                     # Git ignore rules
+├── Dockerfile                     # Docker container configuration
+├── LICENSE                        # Apache License 2.0
+├── README.md                      # Project documentation
+├── index.html                     # HTML entry point
+├── package.json                   # Node.js dependencies and scripts
+├── package-lock.json              # Dependency lock file
+├── postcss.config.js              # PostCSS configuration
+├── tailwind.config.js             # Tailwind CSS configuration
+└── vite.config.js                 # Vite build tool configuration
+```
+
+### Key Directories & Files
+
+- **`src/components/`**: Contains all React components, currently housing the main game logic in `game.jsx`
+- **`src/assets/`**: Designed to hold game assets like sprites, images, and sound files
+- **`src/hooks/`**: Ready for custom React hooks for game state management
+- **`src/utils/`**: Prepared for utility functions and game logic helpers
+- **`src/styles/`**: Contains global CSS and Tailwind CSS imports
+- **`docs/`**: Project documentation including the Product Requirements Document
+- **`.github/workflows/`**: Automated CI/CD pipeline for testing and deployment
+- **Configuration Files**: Vite, Tailwind, PostCSS, Docker, and ESLint configurations
+
 ## 🤖 AI Development Tools
 
 This code was produced using AI Tools: Claude Desktop, Google Gemini, Cursor
